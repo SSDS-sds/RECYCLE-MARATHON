@@ -14,7 +14,7 @@ SCREEN = pygame.display.set_mode((WIDTH, HEIGHT))
 # Change background
 def change_background(img):
     bg = pygame.image.load(img)
-    bg = pygame.transform.scale(img, (WIDTH, HEIGHT))
+    bg = pygame.transform.scale(bg, (WIDTH, HEIGHT))
     SCREEN.blit(bg, (0,0))
 
 # Bin class
@@ -23,7 +23,7 @@ class Bin(pygame.sprite.Sprite):
         super().__init__()
         self.img = pygame.image.load("bin.png")
         self.image = pygame.transform.scale(self.img, (40,60))
-        self.rect = pygame.image.get_rect()
+        self.rect = self.image.get_rect()
 
 # Recycle class
 class Recycle(pygame.sprite.Sprite):
@@ -31,7 +31,7 @@ class Recycle(pygame.sprite.Sprite):
         super().__init__()
         self.img = pygame.image.load(img)
         self.image = pygame.transform.scale(self.img, (30,30))
-        self.rect = pygame.image.get_rect()
+        self.rect = self.image.get_rect()
 
 # Non-recyclable class
 class Non_recyclable(pygame.sprite.Sprite):
@@ -39,7 +39,7 @@ class Non_recyclable(pygame.sprite.Sprite):
         super().__init__()
         self.img = pygame.image.load("plastic.png")
         self.image = pygame.transform.scale(self.img, (40,40))
-        self.rect = pygame.image.get_rect()
+        self.rect = self.image.get_rect()
 
 images = ["item1.png", "item2.png", "item3.png"]
 
@@ -60,7 +60,7 @@ for i in range(50):
 for i in range(20):
     plastic = Non_recyclable()
     plastic.rect.x = random.randrange(WIDTH)
-    plastic.rect.y = random.randrang(HEIGHT)
+    plastic.rect.y = random.randrange(HEIGHT)
     plastic_group.add(plastic)
     all_sprites.add(plastic)
 
@@ -71,3 +71,28 @@ all_sprites.add(bin)
 # Game variables 
 score = 0
 clock = pygame.time.Clock()
+start_time = time.time()
+font = pygame.font.SysFont("Fantasy", 22)
+score_txt = font.render(f"Score: {score}", True, "#3F15A8")
+
+running = True
+# Main game loop
+while running:
+    clock.tick(30)
+
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            running = False
+            pygame.quit()
+            exit()
+
+    time_elapsed = time.time() - start_time
+    if time_elapsed >= 60:
+        if score >= 50:
+            change_background("win_screen.jpg")
+        else:
+            change_background("losing_screen.jpg")
+    else:
+        change_background("bg.png")
+        count_down = font.render(f"Time left: {60 - time_elapsed}", True, "#96DEC8")
+        SCREEN.blit(count_down, (20,10))

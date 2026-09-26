@@ -52,7 +52,7 @@ all_sprites = pygame.sprite.Group()
 for i in range(50):
     item = Recycle(random.choice(images))
     item.rect.x = random.randrange(WIDTH)
-    item.rect.x = random.randrange(HEIGHT)
+    item.rect.y = random.randrange(HEIGHT)
     items_group.add(item)
     all_sprites.add(item)
 
@@ -94,5 +94,36 @@ while running:
             change_background("losing_screen.jpg")
     else:
         change_background("bg.png")
-        count_down = font.render(f"Time left: {60 - time_elapsed}", True, "#96DEC8")
+        count_down = font.render(f"Time left: {(60 - time_elapsed)//1}", True, "#3F15A8")
         SCREEN.blit(count_down, (20,10))
+
+        # Move the bin
+        keys = pygame.key.get_pressed()
+        if keys[pygame.K_UP]:
+            if bin.rect.y > 0:
+                bin.rect.y -= 5
+        if keys[pygame.K_DOWN]:
+            if bin.rect.y < 630:
+                bin.rect.y += 5
+        if keys[pygame.K_RIGHT]:
+            if bin.rect.x < 850:
+                bin.rect.x += 5
+        if keys[pygame.K_LEFT]:
+            if bin.rect.x > 0:
+                bin.rect.x -= 5
+
+        # Check for collision with bin
+        item_hit_list = pygame.sprite.spritecollide(bin, items_group, True)
+        plastic_hit_list = pygame.sprite.spritecollide(bin, plastic_group, True)
+
+        # Check for the list of collisions
+        for item in item_hit_list:
+            score += 2
+            score_txt = font.render(f"Score: {score}", True, "#3F15A8")
+        for plastic in plastic_hit_list:
+            score -= 5
+            score_txt = font.render(f"Score: {score}", True, "#3F15A8")
+        SCREEN.blit(score_txt,(20,50))
+        all_sprites.draw(SCREEN)
+    pygame.display.update()
+pygame.quit()
